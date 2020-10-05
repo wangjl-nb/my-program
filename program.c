@@ -49,7 +49,7 @@ char * delete_zeros(char ch[]){
 }
 int main(int argc, char const *argv[])
 {
-    FILE * fp =fopen("test.txt","r");
+    FILE * fp =fopen(argv[1],"r");
     if(fp==NULL){
         printf("文件打开失败");
         return 0;
