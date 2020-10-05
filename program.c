@@ -72,7 +72,7 @@ int main(int argc, char const *argv[])
             }
             int c=is_reserved(token);
             if(c==0){
-                printf("Indent(%s)\n", token);
+                printf("Ident(%s)\n", token);
             }else{
                 printf("%s\n", string1[c - 1]);
             }
