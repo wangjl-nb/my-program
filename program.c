@@ -47,6 +47,13 @@ char * delete_zeros(char ch[]){
     while(ch[i]=='0')i++;
     return &ch[i];
 }
+int turn_to_num(char ch[]){
+    int num=0;
+    for(int i=0;i<strlen(ch);i++){
+        num=num*10+ch[i]-'0';
+    }
+    return num;
+}
 int main(int argc, char const *argv[])
 {
     FILE * fp =fopen(argv[1],"r");
@@ -89,7 +96,7 @@ int main(int argc, char const *argv[])
                     break;
                 }
             }
-            printf("Int(%s)\n", delete_zeros(token));
+            printf("Int(%d)\n", turn_to_num(delete_zeros(token)));
         }else if(ch=='+'){
             printf("Plus\n");
         }
