@@ -7,11 +7,11 @@
 // ,ELSESY=7,IDSY=8,INTSY=9,COLONSY=10,PLUSSY=11,STARSY=12,COMSY=13\
 // ,LPARSY=14,RPARSY=15,ASSIGNSY=16;
 char ch,token[100]=""; 
-char string[][6]={"BEGIN","END","FOR","IF","THEN","ELSE"};
-char string1[][6] = {"Begin", "End", "For", "If", "Then", "Else"};
+char string[][10]={"BEGIN","END","FOR","IF","THEN","ELSE"};
+char string1[][10] = {"Begin", "End", "For", "If", "Then", "Else"};
 int point=0;
 int is_reserved(char ch[]){
-    for(int i=0;i<7;i++){
+    for(int i=0;i<sizeof(string[0]);i++){
         if(strcmp(ch,string[i])==0){
             return i+1;
         }
@@ -43,7 +43,7 @@ bool is_digit(char c){//判断是否是数字
 }
 char * delete_zeros(char ch[]){
     char res[100]="";
-    int i=0,j=0;
+    int i=0;
     while(ch[i]=='0')i++;
     return &ch[i];
 }
