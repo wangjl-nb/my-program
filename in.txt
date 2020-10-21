@@ -1,4 +1,4 @@
 begin
-    var a = 1;
+    var a = 111111100001;
     print(a);
 end
