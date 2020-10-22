@@ -1,4 +1,6 @@
 begin
-    var a = 111111100001;
+    const b=-2147483647;
+    var a = 2147483647;
+    var c;
     print(a);
 end

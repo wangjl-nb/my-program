@@ -201,11 +201,15 @@ public final class Analyser {
         expect(TokenType.End);
         expect(TokenType.EOF);
     }
-
+// 主过程::=<常量声明><变量声明><语句序列>
     private void analyseMain() throws CompileError {
+        analyseConstantDeclaration();
+        analyseVariableDeclaration();
+        analyseStatementSequence();
 //        throw new Error("Not implemented");
     }
-
+    // <常量声明> ::= {<常量声明语句>}
+// <常量声明语句> ::= 'const'<标识符>'='<常表达式>';'
     private void analyseConstantDeclaration() throws CompileError {
         // 示例函数，示例如何解析常量声明
         // 如果下一个 token 是 const 就继续
@@ -221,33 +225,80 @@ public final class Analyser {
 
             // 分号
             expect(TokenType.Semicolon);
+
+            addSymbol(nameToken.getValueString(),true,true,nameToken.getStartPos());
         }
     }
-
+    // <变量声明> ::= {<变量声明语句>}
+// <变量声明语句> ::= 'var'<标识符>['='<表达式>]';'
     private void analyseVariableDeclaration() throws CompileError {
 //        throw new Error("Not implemented");
+        while(nextIf(TokenType.Var)!=null){
+            var nameToken=expect(TokenType.Ident);
+            if(nextIf(TokenType.Equal)!=null){
+                analyseExpression();
+            }
+            expect(TokenType.Semicolon);
+        }
     }
-
+    // <语句序列> ::= {<语句>}
+// <语句> :: = <赋值语句> | <输出语句> | <空语句>
+// <赋值语句> :: = <标识符>'='<表达式>';'
+// <空语句> :: = ';'
+// <输出语句> :: = 'print' '(' <表达式> ')' ';'
     private void analyseStatementSequence() throws CompileError {
 //        throw new Error("Not implemented");
+
+        while(check(TokenType.Semicolon)||check(TokenType.Print)||check(TokenType.Ident)){
+            analyseStatement();
+        }
     }
 
     private void analyseStatement() throws CompileError {
 //        throw new Error("Not implemented");
+        if(nextIf(TokenType.Semicolon)!=null){
+            ;
+        }else if(check(TokenType.Print)){
+            analyseOutputStatement();
+        }else if(check(TokenType.Ident)){
+            analyseAssignmentStatement();
+        }
     }
-
+    // <常表达式> ::= [<符号>]<无符号整数>
     private void analyseConstantExpression() throws CompileError {
 //        throw new Error("Not implemented");
+        if(check(TokenType.Plus)){
+            next();
+        }else if(check(TokenType.Minus)){
+            next();
+            instructions.add(new Instruction(Operation.LIT, -Integer.parseInt(expect(TokenType.Uint).getValueString())));
+            return;
+        }
+        instructions.add(new Instruction(Operation.LIT, Integer.parseInt(expect(TokenType.Uint).getValueString())));
     }
-
+    // <表达式> ::= <项>{<加法型运算符><项>}
     private void analyseExpression() throws CompileError {
 //        throw new Error("Not implemented");
+        analyseItem();
+        if(check(TokenType.Minus)||check((TokenType.Plus))){
+            boolean flag=check(TokenType.Minus);
+            next();
+            analyseItem();
+            if(flag){
+                instructions.add(new Instruction(Operation.SUB));
+            }else{
+                instructions.add(new Instruction(Operation.ADD));
+            }
+        }
     }
-
+    // <赋值语句> ::= <标识符>'='<表达式>';'
     private void analyseAssignmentStatement() throws CompileError {
-//        throw new Error("Not implemented");
+        expect(TokenType.Ident);
+        expect(TokenType.Equal);
+        analyseExpression();
+        expect(TokenType.Semicolon);
     }
-
+    // <输出语句> :: = 'print' '(' <表达式> ')' ';'
     private void analyseOutputStatement() throws CompileError {
         expect(TokenType.Print);
         expect(TokenType.LParen);
@@ -256,11 +307,21 @@ public final class Analyser {
         expect(TokenType.Semicolon);
         instructions.add(new Instruction(Operation.WRT));
     }
-
+    // <项> :: = <因子>{ <乘法型运算符><因子> }
     private void analyseItem() throws CompileError {
+        analyseFactor();
+        if(check(TokenType.Mult)||check((TokenType.Div))){
+            boolean flag=check(TokenType.Mult);
+            next();
+            analyseFactor();
+            if(flag)
+                instructions.add(new Instruction(Operation.MUL));
+            else
+                instructions.add(new Instruction(Operation.DIV));
+        }
 //        throw new Error("Not implemented");
     }
-
+    // <因子> ::= [<符号>]( <标识符> | <无符号整数> | '('<表达式>')' )
     private void analyseFactor() throws CompileError {
         boolean negate;
         if (nextIf(TokenType.Minus) != null) {
@@ -274,10 +335,16 @@ public final class Analyser {
 
         if (check(TokenType.Ident)) {
             // 调用相应的处理函数
+            next();
+
         } else if (check(TokenType.Uint)) {
             // 调用相应的处理函数
+            instructions.add(new Instruction(Operation.LIT,Integer.parseInt(expect(TokenType.Uint).getValueString())));
         } else if (check(TokenType.LParen)) {
             // 调用相应的处理函数
+            expect(TokenType.LParen);
+            analyseExpression();
+            expect(TokenType.RParen);
         } else {
             // 都不是，摸了
             throw new ExpectedTokenError(List.of(TokenType.Ident, TokenType.Uint, TokenType.LParen), next());

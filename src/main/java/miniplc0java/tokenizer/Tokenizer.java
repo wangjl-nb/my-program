@@ -5,6 +5,8 @@ import miniplc0java.error.TokenizeError;
 import miniplc0java.error.ErrorCode;
 import miniplc0java.util.Pos;
 
+import java.awt.event.MouseAdapter;
+
 public class Tokenizer {
 
     private StringIter it;
@@ -50,14 +52,14 @@ public class Tokenizer {
         //
         // Token 的 Value 应填写数字的值
 //        throw new Error("Not implemented");
-        int sum = 0;
+        long sum = 0;
         Pos now = it.currentPos();
         while (Character.isDigit(it.peekChar())) {
-            if(sum<0)
-                throw new TokenizeError(ErrorCode.IntegerOverflow,now);
             sum = sum * 10 + it.nextChar() - '0';
+            if(sum > Integer.MAX_VALUE)
+                throw new TokenizeError(ErrorCode.IntegerOverflow,now);
         }
-        return new Token(TokenType.Uint,sum,now,it.currentPos());
+        return new Token(TokenType.Uint,(int)sum,now,it.currentPos());
     }
 
     private Token lexIdentOrKeyword() throws TokenizeError {
