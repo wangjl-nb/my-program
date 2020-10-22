@@ -280,7 +280,7 @@ public final class Analyser {
     private void analyseExpression() throws CompileError {
 //        throw new Error("Not implemented");
         analyseItem();
-        if(check(TokenType.Minus)||check((TokenType.Plus))){
+        while(check(TokenType.Minus)||check((TokenType.Plus))){
             boolean flag=check(TokenType.Minus);
             next();
             analyseItem();
@@ -310,7 +310,7 @@ public final class Analyser {
     // <项> :: = <因子>{ <乘法型运算符><因子> }
     private void analyseItem() throws CompileError {
         analyseFactor();
-        if(check(TokenType.Mult)||check((TokenType.Div))){
+        while(check(TokenType.Mult)||check((TokenType.Div))){
             boolean flag=check(TokenType.Mult);
             next();
             analyseFactor();
