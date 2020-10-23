@@ -356,7 +356,7 @@ public final class Analyser {
             if(!isInitialize(nameToken.getValueString(),nameToken.getStartPos())){
                 throw new AnalyzeError(ErrorCode.NotInitialized,nameToken.getStartPos());
             }
-            instructions.add(new Instruction(Operation.STO,getOffset(nameToken.getValueString(), nameToken.getStartPos())));
+            instructions.add(new Instruction(Operation.LOD,getOffset(nameToken.getValueString(), nameToken.getStartPos())));
         } else if (check(TokenType.Uint)) {
             // 调用相应的处理函数
             instructions.add(new Instruction(Operation.LIT,Integer.parseInt(expect(TokenType.Uint).getValueString())));
