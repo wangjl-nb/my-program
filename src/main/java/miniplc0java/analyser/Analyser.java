@@ -249,6 +249,7 @@ public final class Analyser {
                 addSymbol(nameToken.getValueString(),true,false,nameToken.getStartPos());
             }else{
                 addSymbol(nameToken.getValueString(),false,false,nameToken.getStartPos());
+                instructions.add(new Instruction(Operation.LIT, 0));
             }
             expect(TokenType.Semicolon);
         }

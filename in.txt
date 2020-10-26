@@ -1,7 +1,7 @@
 begin
     const a=1;
-    var b = 2147483647;
-    var c;
+    var b ;
+    var c = 2147483647;
     b=213;
     c=a+b;
     print(c);
