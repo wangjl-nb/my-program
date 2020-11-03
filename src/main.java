@@ -14,7 +14,7 @@ public class main {
         Stack<Character> right=new Stack<Character>();
         left.push('#');
         right.push('#');
-        System.out.println(str);
+//        System.out.println(str);
         for(int i=str.length()-1;i>=0;i--){
             right.push(str.charAt(i));
         }
@@ -102,7 +102,7 @@ public class main {
 class analyser {
     /*
      *       +   *   i   (   )   #
-     *   +   >   <   <   <   <   >
+     *   +   >   <   <   <   >   >
      *   *   >   >   <   <   >   >
      *   i   >   >           >   >
      *   (   <   <   <   <   =   >
@@ -110,7 +110,7 @@ class analyser {
      *   #   <   <   <   <   <   =
      * */
     int[][] priority = {
-            {0, 1, 1, 1, 1, 0},//> 0,< 1,= 2
+            {0, 1, 1, 1, 0, 0},//> 0,< 1,= 2
             {0, 0, 1, 1, 0, 0},
             {0, 0,-1,-1, 0, 0},
             {1, 1, 1, 1, 2, 0},
