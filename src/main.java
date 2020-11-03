@@ -9,7 +9,7 @@ public class main {
     public static void main(String[] args) {
         analyser tmp = new analyser();
         Scanner input = new Scanner(System.in);
-        String str=input.next();
+        String str=input.nextLine();
         Stack<Character> left=new Stack<Character>();
         Stack<Character> right=new Stack<Character>();
         left.push('#');
