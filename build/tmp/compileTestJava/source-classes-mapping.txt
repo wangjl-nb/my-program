@@ -1,0 +1,6 @@
+miniplc0java/MiniVmTest.java
+ miniplc0java.MiniVmTest
+miniplc0java/TokenizerTest.java
+ miniplc0java.TokenizerTest
+miniplc0java/AnalyserTest.java
+ miniplc0java.AnalyserTest
