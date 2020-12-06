@@ -5,10 +5,8 @@ public class StackVar {
     boolean isInitialized;
     String name;
     int type;
-    boolean is_fn;
     Var_position position;
-    StackVar(Boolean isConstant,Boolean isInitialized,String name,int type,Var_position position,boolean is_fn){
-        this.is_fn=is_fn;
+    StackVar(Boolean isConstant,Boolean isInitialized,String name,int type,Var_position position){
         this.position=position;
         this.isInitialized=isInitialized;
         this.isConstant=isConstant;
@@ -19,13 +17,9 @@ public class StackVar {
         return isConstant;
     }
 
-    public String getName(){return name;}
-
     public boolean isInitialized() {
         return isInitialized;
     }
-
-    public boolean isIs_fn(){return is_fn;}
 
     public void setType(int type){this.type=type;}
 

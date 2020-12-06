@@ -44,25 +44,16 @@ public class debug_print {
             System.out.println(str);
         }
     }
-    public static void print_expr(ArrayList<ExprToken> exprTokens,Boolean flag){
+    public static void print_expr(ArrayList<ExprToken> exprTokens){
         for(int i=0;i<exprTokens.size();i++){
             if(exprTokens.get(i).type==ExprType.UINT_LITERAL){
                 System.out.print(((Uint)exprTokens.get(i)).value+" ");
-            }else if(exprTokens.get(i).type==ExprType.Var) {
-                System.out.print(((Var) exprTokens.get(i)).stack_var.name + " ");
-            }
-            else if(exprTokens.get(i).type==ExprType.FUNC){
-                System.out.print(exprTokens.get(i).type+" ");
-                for(int j=0;j<((Call_func) (exprTokens.get(i))).args.size();j++){
-                    System.out.print("( ");
-                    print_expr(((Call_func) (exprTokens.get(i))).args.get(j),false);
-                    System.out.print(") ");
-                }
+            }else if(exprTokens.get(i).type==ExprType.Var){
+                System.out.print(((Var)exprTokens.get(i)).stack_var.name+" ");
             }else{
                 System.out.print(exprTokens.get(i).type+" ");
             }
         }
-        if(flag)
-            System.out.print("\n");
+        System.out.print("\n");
     }
 }

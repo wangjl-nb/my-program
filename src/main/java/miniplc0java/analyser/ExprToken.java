@@ -26,13 +26,10 @@ class Var extends ExprToken{
 }
 
 class Call_func extends ExprToken{
-    ArrayList<ArrayList<ExprToken>> args=new ArrayList<ArrayList<ExprToken>>();
+    ArrayList<ExprToken> args=new ArrayList<ExprToken>();
     func function;
     Call_func(ExprType type,func func){
         super(type);
         this.function=func;
-    }
-    public void add_arg(ArrayList<ExprToken> args){
-        this.args.add(args);
     }
 }
