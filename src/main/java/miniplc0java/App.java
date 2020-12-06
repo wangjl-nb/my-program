@@ -152,9 +152,9 @@ public class App {
                 output.println("}");
             }
             //--------------------------------------------------------------
-            for (Instruction instruction : instructions) {
-                output.println(instruction.toString());
-            }
+//            for (Instruction instruction : instructions) {
+//                output.println(instruction.toString());
+//            }
         } else {
             System.err.println("Please specify either '--analyse' or '--tokenize'.");
             System.exit(3);
