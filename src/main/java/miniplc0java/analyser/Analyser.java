@@ -341,8 +341,10 @@ public final class Analyser {
 //        }
         analyseBlockStmt();
         tmp_func.set_locals_num(local_tmp);
-        if(tmp_func.return_num==3&&tmp_func.getOperations().get(tmp_func.getOperations().size()-1).opt!=Operation.ret)
-            tmp_func.AddOperations(new Instruction(Operation.ret));
+        if(tmp_func.return_num==3)
+            if(tmp_func.getOperations().size()==0||tmp_func.getOperations().get(tmp_func.getOperations().size()-1).opt!=Operation.ret)
+                tmp_func.AddOperations(new Instruction(Operation.ret));
+//        System.out.println(tmp_func.getOperations());
         tmp_func = func_list[0];
     }
 
@@ -644,10 +646,15 @@ public final class Analyser {
      * call_expr -> IDENT '(' call_param_list? ')'
      * call_param_list -> expr (',' expr)*
      */
+    boolean is_assgin=false;//不能连等
     private boolean analyseAssignOrIdentOrCallExpr() throws CompileError {
         if (check(TokenType.IDENT)) {
             Token var = expect(TokenType.IDENT);
             if (check(TokenType.ASSIGN)) {
+                if(is_assgin){
+                    throw new AnalyzeError(ErrorCode.MultipleAssign,peek().getStartPos());
+                }
+                is_assgin=true;
                 expr_stmt_flag=false;
                 expr_token[expr_top].clear();
                 expect(TokenType.ASSIGN);
@@ -660,6 +667,7 @@ public final class Analyser {
                     analyseExpr();
                     expr_assgin=true;
                     assign_flag = 1;
+                    is_assgin=false;
                     return true;
                 } else {
                     if (tmp_stack_var == null)
@@ -896,6 +904,10 @@ public final class Analyser {
             analyseExpr();
             trans_expr(char_priority.expr_priority(expr_token[expr_top]));
             tmp_func.AddOperations(new Instruction(Operation.store_64));
+        }else{
+            if(tmp_func.return_num!=3){
+                throw new AnalyzeError(ErrorCode.InvalidValueType,peek().getStartPos());
+            }
         }
 //        debug_print.print_expr(char_priority.expr_priority(expr_token[expr_top]), true);
         assign_flag=1;
