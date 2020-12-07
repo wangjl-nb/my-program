@@ -184,7 +184,7 @@ public class Instruction {
             case br_true:
                 return String.format("BrTrue(%s)",this.arg1);
             case call:
-                return String.format("call(%s)",this.arg1);
+                return String.format("Call(%s)",this.arg1);
             case ret:
                 return "Ret";
             case callname:
