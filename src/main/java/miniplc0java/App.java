@@ -107,29 +107,29 @@ public class App {
 
 //            output.println("72303b3e");
 //            output.println("00000001");
-//            output.println(String.format("%08x", analyzer.stack_top1 + 1));
-//            for (int i = 0; i <= analyzer.stack_top1; i++) {//输出全局变量
-//                StackVar tmp = analyzer.stack_vars[i];
-//                if (tmp.isConstant())
-//                    output.println("01");
-//                else {
-//                    output.println("00");
-//                }
-//                if (tmp.isIs_fn()) {
-//                    String name = tmp.getName();
-//                    output.println(String.format("%08x", name.length()));
-//                    for (int j = 0; j < name.length(); j++) {
-//                        StringBuilder str = new StringBuilder();
-//                        str.append('\'').append(name.charAt(j)).append('\'');
-//                        output.print(str);
-//                    }
-//                    output.print('\n');
-//                } else {
-//                    output.println("00000008");
-//                    output.println("0000000000000000");
-//                }
-//            }
-//            output.println(String.format("%08x", analyzer.func_top + 1));
+            System.out.println(String.format("%08x", analyzer.stack_top1 + 1));
+            for (int i = 0; i <= analyzer.stack_top1; i++) {//输出全局变量
+                StackVar tmp = analyzer.stack_vars[i];
+                if (tmp.isConstant())
+                    System.out.println("01");
+                else {
+                    System.out.println("00");
+                }
+                if (tmp.isIs_fn()) {
+                    String name = tmp.getName();
+                    System.out.println(String.format("%08x", name.length()));
+                    for (int j = 0; j < name.length(); j++) {
+                        StringBuilder str = new StringBuilder();
+                        str.append('\'').append(name.charAt(j)).append('\'');
+                        System.out.print(str);
+                    }
+                    System.out.print('\n');
+                } else {
+                    System.out.println("00000008");
+                    System.out.println("0000000000000000");
+                }
+            }
+            System.out.println(String.format("%08x", analyzer.func_top + 1));
             for (int i = 0; i <= analyzer.func_top; i++) {
                 func tmp = analyzer.func_list[i];
 //                output.println(String.format("%08x", tmp.global_num));
@@ -152,7 +152,7 @@ public class App {
                 System.out.println(str+" {");
                 ArrayList<Instruction> ops=tmp.getOperations();
                 for(int j=0;j<ops.size();j++){
-                    System.out.println(ops.get(j));
+                    System.out.println(String.format("     %d:%s",j,ops.get(j)));
                 }
                 System.out.println("}");
             }

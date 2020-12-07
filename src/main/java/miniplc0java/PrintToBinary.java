@@ -73,12 +73,14 @@ public class PrintToBinary {
       for(int j = 0; j < tmp_func.getOperations().size(); j++) {
         Instruction tmp_inst = tmp_func.getOperations().get(j);
         output_bytes.addAll(instruction_byte(tmp_inst.getOpt()));
-        if(tmp_inst.flag)
-          if(tmp_inst.opt==Operation.push)
+        if(tmp_inst.flag) {
+          if (tmp_inst.opt == Operation.push) {
+//            System.out.println(tmp_inst.arg2);
             output_bytes.addAll(four_int_byte(8, tmp_inst.arg2));
-          else{
+          } else {
             output_bytes.addAll(four_int_byte(4, tmp_inst.arg1));
           }
+        }
       }
     }
     return output_bytes;

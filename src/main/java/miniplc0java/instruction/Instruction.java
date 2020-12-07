@@ -132,7 +132,7 @@ public class Instruction {
             case nop:
                 return "Nop()";
             case push:
-                return String.format("Push(%s)",this.arg1);
+                return String.format("Push(%s)",this.arg2);
             case pop:
                 return "Pop()";
             case popn:
