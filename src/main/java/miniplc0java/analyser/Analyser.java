@@ -924,6 +924,7 @@ public final class Analyser {
         expr_token[expr_top].clear();
         assign_flag = 2;
         int loop_cnt=tmp_func.operations.size();
+        tmp_func.AddOperations(new Instruction(Operation.br,0));
         analyseExpr();
         trans_expr(char_priority.expr_priority(expr_token[expr_top]));
         Instruction begin=new Instruction(Operation.br,0);
