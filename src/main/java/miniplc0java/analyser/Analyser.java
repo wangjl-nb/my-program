@@ -110,6 +110,7 @@ public final class Analyser {
         if (peekedToken == null) {
             do {
                 peekedToken = tokenizer.nextToken();
+                System.out.println(peekedToken);
             } while (peekedToken.getTokenType().equals(TokenType.ANNOTATION));
         }
         return peekedToken;
