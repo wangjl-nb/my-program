@@ -1,12 +1,17 @@
+let y:int;
 fn fib(x: int) -> int {
     if x<=1 {
-        if x<=2{
+        if y<=2{
             return 1;
         }
     }
     let result: int = fib(x - 1);
     result = result + fib(x - 2);
     return result;
+}
+
+fn fib1(x: int) -> int {
+    return;
 }
 
 fn main() -> int {
