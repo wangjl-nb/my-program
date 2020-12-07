@@ -1,11 +1,6 @@
 package miniplc0java;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -90,7 +85,7 @@ public class App {
             } catch (Exception e) {
                 // 遇到错误不输出，直接退出
                 System.err.println(e);
-                System.exit(0);
+                System.exit(1);
                 return;
             }
             for (Token token : tokens) {
@@ -105,59 +100,78 @@ public class App {
             } catch (Exception e) {
                 // 遇到错误不输出，直接退出
                 System.err.println(e);
-                System.exit(0);
+                System.exit(1);
                 return;
             }
             //----------------------------------
-            output.print("72303b3e");
-            output.print("00000001");
-            output.print(String.format("%08x", analyzer.stack_top1 + 1));
-            for (int i = 0; i <= analyzer.stack_top1; i++) {//输出全局变量
-                StackVar tmp = analyzer.stack_vars[i];
-                if (tmp.isConstant())
-                    output.print("01");
-                else {
-                    output.print("00");
-                }
-                if (tmp.isIs_fn()) {
-                    String name = tmp.getName();
-                    output.print(String.format("%08x", name.length()));
-                    for (int j = 0; j < name.length(); j++) {
-                        StringBuilder str = new StringBuilder();
-                        str.append('\'').append(name.charAt(j)).append('\'');
-                        output.print(str);
-                    }
-                } else {
-                    output.print("00000008");
-                    output.print("0000000000000000");
-                }
-            }
-            output.print(String.format("%08x", analyzer.func_top + 1));
-            for (int i = 0; i <= analyzer.func_top; i++) {
-                func tmp = analyzer.func_list[i];
-                output.print(String.format("%08x", tmp.global_num));
-                if(tmp.return_num!=3){
-                    output.print(String.format("%08x", 1));
-                }else{
-                    output.print(String.format("%08x", 0));
-                }
-                output.print(String.format("%08x", tmp.args_num));
-                output.print(String.format("%08x", tmp.locals_num));
-                output.print(String.format("%08x", tmp.getOperations().size()));
-//                output.println("("+tmp.func_num+")");
-//                StringBuilder str=new StringBuilder().append("fn [").append(tmp.global_num).append("] ")
-//                        .append(tmp.locals_num).append(" ").append(tmp.args_num).append(" -> ");
-//                if(tmp.return_num!=3){
-//                    str.append(1);
-//                }else{
-//                    str.append(0);
+
+//            output.println("72303b3e");
+//            output.println("00000001");
+//            output.println(String.format("%08x", analyzer.stack_top1 + 1));
+//            for (int i = 0; i <= analyzer.stack_top1; i++) {//输出全局变量
+//                StackVar tmp = analyzer.stack_vars[i];
+//                if (tmp.isConstant())
+//                    output.println("01");
+//                else {
+//                    output.println("00");
 //                }
-//                output.println(str+" {");
-                ArrayList<Instruction> ops=tmp.getOperations();
-                for(int j=0;j<ops.size();j++){
-                    output.print(ops.get(j));
-                }
+//                if (tmp.isIs_fn()) {
+//                    String name = tmp.getName();
+//                    output.println(String.format("%08x", name.length()));
+//                    for (int j = 0; j < name.length(); j++) {
+//                        StringBuilder str = new StringBuilder();
+//                        str.append('\'').append(name.charAt(j)).append('\'');
+//                        output.print(str);
+//                    }
+//                    output.print('\n');
+//                } else {
+//                    output.println("00000008");
+//                    output.println("0000000000000000");
+//                }
+//            }
+//            output.println(String.format("%08x", analyzer.func_top + 1));
+//            for (int i = 0; i <= analyzer.func_top; i++) {
+//                func tmp = analyzer.func_list[i];
+//                output.println(String.format("%08x", tmp.global_num));
+//                if(tmp.return_num!=3){
+//                    output.println(String.format("%08x", 1));
+//                }else{
+//                    output.println(String.format("%08x", 0));
+//                }
+//                output.println(String.format("%08x", tmp.args_num));
+//                output.println(String.format("%08x", tmp.locals_num));
+//                output.println(String.format("%08x", tmp.getOperations().size()));
+////                output.println("("+tmp.func_num+")");
+////                StringBuilder str=new StringBuilder().append("fn [").append(tmp.global_num).append("] ")
+////                        .append(tmp.locals_num).append(" ").append(tmp.args_num).append(" -> ");
+////                if(tmp.return_num!=3){
+////                    str.append(1);
+////                }else{
+////                    str.append(0);
+////                }
+////                output.println(str+" {");
+//                ArrayList<Instruction> ops=tmp.getOperations();
+//                for(int j=0;j<ops.size();j++){
+//                    output.println(ops.get(j));
+//                }
 //                output.println("}");
+//            }
+            DataOutputStream out = null;
+            try {
+                out = new DataOutputStream(new FileOutputStream(new File(outputFileName)));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            PrintToBinary p_to_byte = new PrintToBinary();
+            List<Byte> tmp_byte_list = p_to_byte.output_print(analyzer);
+            byte[] tmp_byte = new byte[tmp_byte_list.size()];
+            for(int i = 0; i < tmp_byte_list.size(); i++)
+                tmp_byte[i] = tmp_byte_list.get(i);
+            try {
+                assert out != null;
+                out.write(tmp_byte);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         } else {
             System.err.println("Please specify either '--analyse' or '--tokenize'.");

@@ -5,9 +5,10 @@ import miniplc0java.analyser.StackVar;
 import java.util.Objects;
 
 public class Instruction {
-    private Operation opt;
-    int arg1;
-    long arg2;
+    public Operation opt;
+    public int arg1;
+    public long arg2;
+    public boolean flag=false;
 
     public Instruction(Operation opt) {
         this.opt = opt;
@@ -16,11 +17,13 @@ public class Instruction {
     public Instruction(Operation opt, int x) {
         this.opt = opt;
         arg1=x;
+        flag=true;
     }
 
     public Instruction(Operation opt, long x) {
         this.opt = opt;
         arg2=x;
+        flag=true;
     }
 
 //    @Override
