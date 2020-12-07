@@ -130,8 +130,8 @@ public class App {
 //                }
 //            }
 //            output.println(String.format("%08x", analyzer.func_top + 1));
-//            for (int i = 0; i <= analyzer.func_top; i++) {
-//                func tmp = analyzer.func_list[i];
+            for (int i = 0; i <= analyzer.func_top; i++) {
+                func tmp = analyzer.func_list[i];
 //                output.println(String.format("%08x", tmp.global_num));
 //                if(tmp.return_num!=3){
 //                    output.println(String.format("%08x", 1));
@@ -141,21 +141,21 @@ public class App {
 //                output.println(String.format("%08x", tmp.args_num));
 //                output.println(String.format("%08x", tmp.locals_num));
 //                output.println(String.format("%08x", tmp.getOperations().size()));
-////                output.println("("+tmp.func_num+")");
-////                StringBuilder str=new StringBuilder().append("fn [").append(tmp.global_num).append("] ")
-////                        .append(tmp.locals_num).append(" ").append(tmp.args_num).append(" -> ");
-////                if(tmp.return_num!=3){
-////                    str.append(1);
-////                }else{
-////                    str.append(0);
-////                }
-////                output.println(str+" {");
-//                ArrayList<Instruction> ops=tmp.getOperations();
-//                for(int j=0;j<ops.size();j++){
-//                    output.println(ops.get(j));
-//                }
-//                output.println("}");
-//            }
+                System.out.println("("+tmp.func_num+")");
+                StringBuilder str=new StringBuilder().append("fn [").append(tmp.global_num).append("] ")
+                        .append(tmp.locals_num).append(" ").append(tmp.args_num).append(" -> ");
+                if(tmp.return_num!=3){
+                    str.append(1);
+                }else{
+                    str.append(0);
+                }
+                System.out.println(str+" {");
+                ArrayList<Instruction> ops=tmp.getOperations();
+                for(int j=0;j<ops.size();j++){
+                    System.out.println(ops.get(j));
+                }
+                System.out.println("}");
+            }
             DataOutputStream out = null;
             try {
                 out = new DataOutputStream(new FileOutputStream(new File(outputFileName)));
