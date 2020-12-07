@@ -341,7 +341,7 @@ public final class Analyser {
 //        }
         analyseBlockStmt();
         tmp_func.set_locals_num(local_tmp);
-        if(tmp_func.return_num==3)
+        if(tmp_func.return_num==3&&tmp_func.getOperations().get(tmp_func.getOperations().size()-1).opt!=Operation.ret)
             tmp_func.AddOperations(new Instruction(Operation.ret));
         tmp_func = func_list[0];
     }
@@ -440,6 +440,8 @@ public final class Analyser {
             position = new Var_position(local_tmp, 3);
         addSymbol(var.getValueString(), false, false, var.getStartPos(), 1, position,false);
         tmp_var = stack_vars[stack_top1];
+        if (stack_top2 == 0)
+            tmp_var.setInitialized(true);
         expect(TokenType.COLON);
         int type = analyseVarTy();
         tmp_var.setType(type);
@@ -890,11 +892,13 @@ public final class Analyser {
         assign_flag=tmp_func.return_num;
 //        System.out.println("//"+assign_flag);
         tmp_func.AddOperations(new Instruction(Operation.arga,0));
-        analyseExpr();
-        trans_expr(char_priority.expr_priority(expr_token[expr_top]));
+        if(!check(TokenType.SEMICOLON)) {
+            analyseExpr();
+            trans_expr(char_priority.expr_priority(expr_token[expr_top]));
+            tmp_func.AddOperations(new Instruction(Operation.store_64));
+        }
 //        debug_print.print_expr(char_priority.expr_priority(expr_token[expr_top]), true);
         assign_flag=1;
-        tmp_func.AddOperations(new Instruction(Operation.store_64));
         tmp_func.AddOperations(new Instruction(Operation.ret));
         expect(TokenType.SEMICOLON);
     }
