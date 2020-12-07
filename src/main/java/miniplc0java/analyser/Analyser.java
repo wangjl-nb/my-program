@@ -737,6 +737,7 @@ public final class Analyser {
             tmp_cnt=param_cnt;
             expect(TokenType.COMMA);
             analyseExpr();
+            call_func[expr_top].add_arg(char_priority.expr_priority(expr_token[expr_top]));
             param_cnt=tmp_cnt;
         }
     }
@@ -939,6 +940,7 @@ public final class Analyser {
     /**
      * if_stmt -> 'if' expr block_stmt ('else' 'if' expr block_stmt)* ('else' block_stmt)
      */
+    ArrayList<Instruction> br_list=new ArrayList<>();
     private void analyseIfStmt() throws CompileError {
         expect(TokenType.IF_KW);
         expr_token[expr_top].clear();
@@ -952,6 +954,9 @@ public final class Analyser {
         tmp_func.AddOperations(begin);
         int br_cnt=tmp_func.operations.size();
         analyseBlockStmt();
+        Instruction tmp_br=new Instruction(Operation.br,tmp_func.getOperations().size());
+        br_list.add(tmp_br);
+        tmp_func.AddOperations(tmp_br);
         begin.setArg1(tmp_func.operations.size()-br_cnt);
         while (check(TokenType.ELSE_KW)) {
             expect(TokenType.ELSE_KW);
@@ -962,17 +967,25 @@ public final class Analyser {
                 analyseExpr();
                 assign_flag = 1;
                 trans_expr(char_priority.expr_priority(expr_token[expr_top]));
-//                debug_print.print_expr(char_priority.expr_priority(expr_token[expr_top]), true);
+//              debug_print.print_expr(char_priority.expr_priority(expr_token[expr_top]), true);
                 tmp_func.AddOperations(new Instruction(Operation.br_true,1));
                 begin=new Instruction(Operation.br,0);
                 tmp_func.AddOperations(begin);
                 br_cnt=tmp_func.operations.size();
                 analyseBlockStmt();
+                tmp_br=new Instruction(Operation.br,tmp_func.getOperations().size());
+                br_list.add(tmp_br);
+                tmp_func.AddOperations(tmp_br);
                 begin.setArg1(tmp_func.operations.size()-br_cnt);
             } else {
                 analyseBlockStmt();
                 break;
             }
         }
+        for(int i=0;i<br_list.size();i++){
+            Instruction tmp=br_list.get(i);
+            tmp.setArg1(tmp_func.getOperations().size()-tmp.arg1-1);
+        }
+        br_list.clear();
     }
 }
