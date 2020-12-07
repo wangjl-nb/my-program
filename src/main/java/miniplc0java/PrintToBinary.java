@@ -52,6 +52,8 @@ public class PrintToBinary {
       }
     }
 
+    output_bytes.addAll(four_int_byte(4, analyzer.func_top+1));
+
     for(int i = 0; i <= analyzer.func_top; i++){
       func tmp_func = analyzer.func_list[i];
       //name
