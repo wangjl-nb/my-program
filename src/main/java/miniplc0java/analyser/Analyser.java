@@ -804,7 +804,7 @@ public final class Analyser {
                 return true;
             case NEQ:
                 expect(TokenType.NEQ);
-                expr_token[expr_top].add(new ExprToken(ExprType.NEG));
+                expr_token[expr_top].add(new ExprToken(ExprType.NEQ));
                 return true;
             case LE:
                 expect(TokenType.LE);
