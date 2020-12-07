@@ -10,8 +10,8 @@ public class ExprToken {
 }
 
 class Uint extends ExprToken{
-    int value;
-    Uint(ExprType type,int value){
+    long value;
+    Uint(ExprType type,long value){
         super(type);
         this.value=value;
     }

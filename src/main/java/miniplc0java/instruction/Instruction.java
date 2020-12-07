@@ -7,7 +7,7 @@ import java.util.Objects;
 public class Instruction {
     private Operation opt;
     int arg1;
-    int arg2;
+    long arg2;
 
     public Instruction(Operation opt) {
         this.opt = opt;
@@ -18,10 +18,9 @@ public class Instruction {
         arg1=x;
     }
 
-    public Instruction(Operation opt, int x,int y) {
+    public Instruction(Operation opt, long x) {
         this.opt = opt;
-        arg1=x;
-        arg2=y;
+        arg2=x;
     }
 
 //    @Override
@@ -53,71 +52,142 @@ public class Instruction {
     public String toString() {
         switch (this.opt) {
             case not:
-                return "Not";
+                return "2e";
             case neg_i:
-                return "NegI";
+                return "34";
             case nop:
-                return "Nop()";
+                return "00";
             case push:
-                return String.format("Push(%s)",this.arg1);
+                return String.format("01%016x",this.arg2);
             case pop:
-                return "Pop()";
+                return "02";
             case popn:
-                return String.format("PopN(%s)",this.arg1);
+                return String.format("03%08x",this.arg1);
             case dup:
-                return "Dup()";
+                return "04";
             case loca:
-                return String.format("LocA(%s)",this.arg1);
+                return String.format("0a%08x",this.arg1);
             case arga:
-                return String.format("ArgA(%s)",this.arg1);
+                return String.format("0b%08x",this.arg1);
             case globa:
-                return String.format("GlobA(%s)",this.arg1);
+                return String.format("0c%08x",this.arg1);
             case load_8:
-                return "Load8";
+                return "10";
             case load_16:
-                return "Load16";
+                return "11";
             case load_32:
-                return "Load32";
+                return "12";
             case load_64:
-                return "Load64";
+                return "13";
             case store_8:
-                return "Store8";
+                return "14";
             case store_16:
-                return "Store16";
+                return "15";
             case store_32:
-                return "Store32";
+                return "16";
             case store_64:
-                return "Store64";
+                return "17";
             case stackalloc:
-                return String.format("StackAlloc(%s)",this.arg1);
+                return String.format("1a%08x",this.arg1);
             case add_i:
-                return "AddI";
+                return "20";
             case sub_i:
-                return "SubI";
+                return "21";
             case mul_i:
-                return "MulI";
+                return "22";
             case div_i:
-                return "DivI";
+                return "23";
             case cmp_i:
-                return "CmpI";
+                return "30";
             case set_lt:
-                return "SetLt";
+                return "39";
             case set_gt:
-                return "SetGt";
+                return "3a";
             case br:
-                return String.format("Br(%s)",this.arg1);
+                return String.format("41%08x",this.arg1);
             case br_false:
-                return String.format("BrFalse(%s)",this.arg1);
+                return String.format("42%08x",this.arg1);
             case br_true:
-                return String.format("BrTrue(%s)",this.arg1);
+                return String.format("43%08x",this.arg1);
             case call:
-                return String.format("call(%s)",this.arg1);
+                return String.format("48%08x",this.arg1);
             case ret:
-                return "Ret";
+                return "49";
             case callname:
-                return String.format("CallName(%s)",this.arg1);
+                return String.format("4a%08x",this.arg1);
             default:
-                return "Panic";
+                return "fe";
         }
     }
+//    @Override
+//    public String toString() {
+//        switch (this.opt) {
+//            case not:
+//                return "Not";
+//            case neg_i:
+//                return "NegI";
+//            case nop:
+//                return "Nop()";
+//            case push:
+//                return String.format("Push(%s)",this.arg1);
+//            case pop:
+//                return "Pop()";
+//            case popn:
+//                return String.format("PopN(%s)",this.arg1);
+//            case dup:
+//                return "Dup()";
+//            case loca:
+//                return String.format("LocA(%s)",this.arg1);
+//            case arga:
+//                return String.format("ArgA(%s)",this.arg1);
+//            case globa:
+//                return String.format("GlobA(%s)",this.arg1);
+//            case load_8:
+//                return "Load8";
+//            case load_16:
+//                return "Load16";
+//            case load_32:
+//                return "Load32";
+//            case load_64:
+//                return "Load64";
+//            case store_8:
+//                return "Store8";
+//            case store_16:
+//                return "Store16";
+//            case store_32:
+//                return "Store32";
+//            case store_64:
+//                return "Store64";
+//            case stackalloc:
+//                return String.format("StackAlloc(%s)",this.arg1);
+//            case add_i:
+//                return "AddI";
+//            case sub_i:
+//                return "SubI";
+//            case mul_i:
+//                return "MulI";
+//            case div_i:
+//                return "DivI";
+//            case cmp_i:
+//                return "CmpI";
+//            case set_lt:
+//                return "SetLt";
+//            case set_gt:
+//                return "SetGt";
+//            case br:
+//                return String.format("Br(%s)",this.arg1);
+//            case br_false:
+//                return String.format("BrFalse(%s)",this.arg1);
+//            case br_true:
+//                return String.format("BrTrue(%s)",this.arg1);
+//            case call:
+//                return String.format("call(%s)",this.arg1);
+//            case ret:
+//                return "Ret";
+//            case callname:
+//                return String.format("CallName(%s)",this.arg1);
+//            default:
+//                return "Panic";
+//        }
+//    }
 }

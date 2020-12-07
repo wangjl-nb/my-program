@@ -91,10 +91,8 @@ public class Tokenizer {
         Pos now = it.currentPos();
         while (Character.isDigit(it.peekChar())) {
             sum = sum * 10 + it.nextChar() - '0';
-            if(sum > Integer.MAX_VALUE)
-                throw new TokenizeError(ErrorCode.IntegerOverflow,now);
         }
-        return new Token(TokenType.UINT_LITERAL,(int)sum,now,it.currentPos());
+        return new Token(TokenType.UINT_LITERAL,sum,now,it.currentPos());
     }
 
     private Token lexIdentOrKeyword() throws TokenizeError {

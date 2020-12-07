@@ -298,7 +298,7 @@ public final class Analyser {
         expect(TokenType.EOF);
 //        System.out.println("ok!!!!!");
 //        debug_print.print_stack(stack_top1, stack_top2, stack_vars, stack_points);
-        debug_print.print_funcs(func_list, func_top);
+//        debug_print.print_funcs(func_list, func_top);
     }
 
     /**
@@ -451,7 +451,7 @@ public final class Analyser {
             analyseExpr();
             trans_expr(char_priority.expr_priority(expr_token[expr_top]));
             tmp_func.AddOperations(new Instruction(Operation.store_64));
-            debug_print.print_expr(char_priority.expr_priority(expr_token[expr_top]), true);
+//            debug_print.print_expr(char_priority.expr_priority(expr_token[expr_top]), true);
         }
         expect(TokenType.SEMICOLON);
         assign_flag = 1;
@@ -492,7 +492,7 @@ public final class Analyser {
                         tmp_func.AddOperations(new Instruction(Operation.popn,1));
                 }
             }else{
-                System.out.println(tmp.type);
+//                System.out.println(tmp.type);
                 switch (tmp.type) {
                     case NEG:
                         tmp_func.AddOperations(new Instruction(Operation.neg_i));
@@ -565,7 +565,7 @@ public final class Analyser {
         analyseExpr();
         trans_expr(char_priority.expr_priority(expr_token[expr_top]));
         tmp_func.AddOperations(new Instruction(Operation.store_64));
-        debug_print.print_expr(char_priority.expr_priority(expr_token[expr_top]), true);
+//        debug_print.print_expr(char_priority.expr_priority(expr_token[expr_top]), true);
         expect(TokenType.SEMICOLON);
         assign_flag = 1;
     }
@@ -653,7 +653,7 @@ public final class Analyser {
                 if (tmp_stack_var != null && !tmp_stack_var.isConstant) {
                     tmp_stack_var.setInitialized(true);
                     assign_flag = tmp_stack_var.type;
-                    System.out.println(String.format("%s:%d",var.getValueString(),assign_flag));
+//                    System.out.println(String.format("%s:%d",var.getValueString(),assign_flag));
                     analyseExpr();
                     expr_assgin=true;
                     assign_flag = 1;
@@ -739,7 +739,7 @@ public final class Analyser {
             if(assign_flag!=2&&expr_top==0){
                 throw new AnalyzeError(ErrorCode.InvalidAssignment,peek().getStartPos());
             }
-            expr_token[expr_top].add(new Uint(ExprType.UINT_LITERAL, (int) tmp.getValue()));
+            expr_token[expr_top].add(new Uint(ExprType.UINT_LITERAL, (long) tmp.getValue()));
             return true;
         } else if (check(TokenType.STRING_LITERAL)) {
             expect(TokenType.STRING_LITERAL);
@@ -870,7 +870,7 @@ public final class Analyser {
             expr_stmt_flag=true;
             analyseExpr();
             trans_expr(char_priority.expr_priority(expr_token[expr_top]));
-            debug_print.print_expr(char_priority.expr_priority(expr_token[expr_top]), true);
+//            debug_print.print_expr(char_priority.expr_priority(expr_token[expr_top]), true);
             expr_stmt_flag=false;
             if(expr_assgin){
                 tmp_func.AddOperations(new Instruction(Operation.store_64));
@@ -887,11 +887,11 @@ public final class Analyser {
         expect(TokenType.RETURN_KW);
         expr_token[expr_top].clear();
         assign_flag=tmp_func.return_num;
-        System.out.println("//"+assign_flag);
+//        System.out.println("//"+assign_flag);
         tmp_func.AddOperations(new Instruction(Operation.arga,0));
         analyseExpr();
         trans_expr(char_priority.expr_priority(expr_token[expr_top]));
-        debug_print.print_expr(char_priority.expr_priority(expr_token[expr_top]), true);
+//        debug_print.print_expr(char_priority.expr_priority(expr_token[expr_top]), true);
         assign_flag=1;
         tmp_func.AddOperations(new Instruction(Operation.store_64));
         tmp_func.AddOperations(new Instruction(Operation.ret));
@@ -913,7 +913,7 @@ public final class Analyser {
         tmp_func.AddOperations(begin);
         int br_cnt=tmp_func.operations.size();
         assign_flag = 1;
-        debug_print.print_expr(char_priority.expr_priority(expr_token[expr_top]), true);
+//        debug_print.print_expr(char_priority.expr_priority(expr_token[expr_top]), true);
         analyseBlockStmt();
         tmp_func.AddOperations(new Instruction(Operation.br,loop_cnt-tmp_func.operations.size()));
         begin.setArg1(tmp_func.operations.size()-br_cnt);
@@ -928,7 +928,7 @@ public final class Analyser {
         assign_flag = 2;
         analyseExpr();
         trans_expr(char_priority.expr_priority(expr_token[expr_top]));
-        debug_print.print_expr(char_priority.expr_priority(expr_token[expr_top]), true);
+//        debug_print.print_expr(char_priority.expr_priority(expr_token[expr_top]), true);
         assign_flag = 1;
         Instruction begin=new Instruction(Operation.br,0);
         tmp_func.AddOperations(new Instruction(Operation.br_true,1));
@@ -945,7 +945,7 @@ public final class Analyser {
                 analyseExpr();
                 assign_flag = 1;
                 trans_expr(char_priority.expr_priority(expr_token[expr_top]));
-                debug_print.print_expr(char_priority.expr_priority(expr_token[expr_top]), true);
+//                debug_print.print_expr(char_priority.expr_priority(expr_token[expr_top]), true);
                 tmp_func.AddOperations(new Instruction(Operation.br_true,1));
                 begin=new Instruction(Operation.br,0);
                 tmp_func.AddOperations(begin);
