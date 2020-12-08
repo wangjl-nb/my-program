@@ -47,7 +47,15 @@ public class PrintToBinary {
       else{
         StackVar tmp_func = analyzer.global_vars[i];
         assert tmp_func != null;
-        output_bytes.addAll(four_int_byte(4, tmp_func.getName().length()));
+        String str=tmp_func.getName();
+        int length=0;
+        for(int j=0;j<str.length();j++){
+          if(str.charAt(j)=='\\'){
+            j++;
+          }
+          length++;
+        }
+        output_bytes.addAll(four_int_byte(4, length));
         output_bytes.addAll(string_byte(tmp_func.getName()));
       }
     }
