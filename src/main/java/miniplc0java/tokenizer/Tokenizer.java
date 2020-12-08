@@ -70,8 +70,9 @@ public class Tokenizer {
         String pattern="\"(([^\"\\\\])|(\\\\[\\\\\"'nrt]))*\"";
 //        System.out.println(str+"\n"+pattern);
         boolean isMatch= Pattern.matches(pattern,str);
+        String string=str.substring(1,str.length()-1);
         if(isMatch){
-            return new Token(TokenType.STRING_LITERAL,str,now, it.currentPos());
+            return new Token(TokenType.STRING_LITERAL,string,now, it.currentPos());
         }else{
             throw new TokenizeError(ErrorCode.InvalidString,now);
         }

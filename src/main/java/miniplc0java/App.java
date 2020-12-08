@@ -120,7 +120,21 @@ public class App {
                     System.out.println(String.format("%08x", name.length()));
                     for (int j = 0; j < name.length(); j++) {
                         StringBuilder str = new StringBuilder();
-                        str.append('\'').append(name.charAt(j)).append('\'');
+                        char ch=name.charAt(j);
+                        if(ch == '\\') {
+                            j++;
+                            ch = name.charAt(j);
+                            if (ch == 'n') {
+                                ch = '\n';
+                            } else if (ch == '\\') {
+                                ch = '\\';
+                            } else if (ch == 't') {
+                                ch = '\t';
+                            } else if (ch == 'r') {
+                                ch = '\r';
+                            }
+                        }
+                        str.append(ch);
                         System.out.print(str);
                     }
                     System.out.print('\n');

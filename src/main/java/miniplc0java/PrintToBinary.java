@@ -119,6 +119,20 @@ public class PrintToBinary {
       char ch = str.charAt(i);
       if(ch != '\\')
         str_array.add((byte)(ch & 0xFF));
+      else{
+        i++;
+        ch=str.charAt(i);
+        if(ch=='n'){
+          ch='\n';
+        }else if(ch=='\\'){
+          ch='\\';
+        }else if(ch=='t'){
+          ch='\t';
+        }else if(ch=='r'){
+          ch='\r';
+        }
+        str_array.add((byte)(ch & 0xFF));
+      }
     }
     return str_array;
   }
