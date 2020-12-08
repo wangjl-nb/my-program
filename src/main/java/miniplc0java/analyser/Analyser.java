@@ -346,11 +346,6 @@ public final class Analyser {
         int ty = analyseFnTy();
         tmp_fn.setType(ty);
         tmp_func.set_return_num(ty);
-//        if (ty == 3)
-//            tmp_func.set_return_num(0);
-//        else {
-//            tmp_func.set_return_num(1);
-//        }
         analyseBlockStmt();
         tmp_func.set_locals_num(local_tmp);
         if (tmp_func.return_num == 3)
@@ -922,8 +917,8 @@ public final class Analyser {
         expr_token[expr_top].clear();
         assign_flag = tmp_func.return_num;
 //        System.out.println("//"+assign_flag);
-        tmp_func.AddOperations(new Instruction(Operation.arga, 0));
         if (!check(TokenType.SEMICOLON)) {
+            tmp_func.AddOperations(new Instruction(Operation.arga, 0));
             analyseExpr();
             trans_expr(char_priority.expr_priority(expr_token[expr_top]));
             tmp_func.AddOperations(new Instruction(Operation.store_64));

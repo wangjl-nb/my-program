@@ -45,12 +45,12 @@ miniplc0java/analyser/StackVar.java
  miniplc0java.analyser.StackVar
  miniplc0java.analyser.Var_position
  miniplc0java.analyser.stack_point
-miniplc0java/analyser/Analyser.java
- miniplc0java.analyser.Analyser
- miniplc0java.analyser.Analyser$1
 miniplc0java/tokenizer/Tokenizer.java
  miniplc0java.tokenizer.Tokenizer
 miniplc0java/PrintToBinary.java
  miniplc0java.PrintToBinary
+miniplc0java/analyser/Analyser.java
+ miniplc0java.analyser.Analyser
+ miniplc0java.analyser.Analyser$1
 miniplc0java/App.java
  miniplc0java.App
