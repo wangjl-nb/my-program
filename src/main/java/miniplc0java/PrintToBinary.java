@@ -30,7 +30,7 @@ public class PrintToBinary {
     //version
     output_bytes.addAll(four_int_byte(4, 1));
     //globals.count
-    output_bytes.addAll(four_int_byte(4, analyzer.global_top+1));
+//    output_bytes.addAll(four_int_byte(4, analyzer.global_top+1));
     //
     for(int i = 0; i <= analyzer.global_top; i++){
       StackVar tmp_symbol = analyzer.global_vars[i];
