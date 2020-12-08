@@ -4,7 +4,7 @@ public class StackVar {
     boolean isConstant;
     boolean isInitialized;
     String name;
-    int type;
+    public int type;
     boolean is_fn;
     Var_position position;
     StackVar(Boolean isConstant,Boolean isInitialized,String name,int type,Var_position position,boolean is_fn){

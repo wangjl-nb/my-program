@@ -30,7 +30,9 @@ public final class Analyser {
 //    HashMap<String, SymbolEntry> symbolTable = new HashMap<>();
     public StackVar[] stack_vars = new StackVar[1000];
     public stack_point[] stack_points = new stack_point[1000];
+    public StackVar[] global_vars = new StackVar[1000];//存储全局变量包括字符串
     public func[] func_list = new func[1000];//函数列表
+    public int global_top = -1;
     public int stack_top1 = -1;
     public int stack_top2 = -1;
     public int func_top = -1;
@@ -63,17 +65,17 @@ public final class Analyser {
         tmp_func.func_num = func_top;
         func_map.put(stack_vars[stack_top1].name, func_list[func_top]);//函数映射
         analyseProgram();
-        func main_func=func_map.get("main");//加载主函数
-        int size=main_func.return_num;
-        if(size==3)
-            size=0;
-        else{
-            size=1;
+        func main_func = func_map.get("main");//加载主函数
+        int size = main_func.return_num;
+        if (size == 3)
+            size = 0;
+        else {
+            size = 1;
         }
-        tmp_func.AddOperations(new Instruction(Operation.stackalloc,size));
-        tmp_func.AddOperations(new Instruction(Operation.call,main_func.func_num));
-        if(size>0){
-            tmp_func.AddOperations(new Instruction(Operation.popn,1));
+        tmp_func.AddOperations(new Instruction(Operation.stackalloc, size));
+        tmp_func.AddOperations(new Instruction(Operation.call, main_func.func_num));
+        if (size > 0) {
+            tmp_func.AddOperations(new Instruction(Operation.popn, 1));
         }
         return instructions;
     }
@@ -82,22 +84,31 @@ public final class Analyser {
     //添加标准库
     public void initial_stack() {
         stack_vars[++stack_top1] = new StackVar(true, true, "getint", 2, new Var_position(0, 1), true);
+        global_vars[++global_top] = stack_vars[stack_top1];
         func_map.put(stack_vars[stack_top1].name, new func(0, 0, stack_top1, 2, true));
         stack_vars[++stack_top1] = new StackVar(true, true, "getdouble", 4, new Var_position(1, 1), true);
+        global_vars[++global_top] = stack_vars[stack_top1];
         func_map.put(stack_vars[stack_top1].name, new func(0, 0, stack_top1, 4, true));
         stack_vars[++stack_top1] = new StackVar(true, true, "getchar", 2, new Var_position(2, 1), true);
+        global_vars[++global_top] = stack_vars[stack_top1];
         func_map.put(stack_vars[stack_top1].name, new func(0, 0, stack_top1, 2, true));
         stack_vars[++stack_top1] = new StackVar(true, true, "putint", 3, new Var_position(3, 1), true);
+        global_vars[++global_top] = stack_vars[stack_top1];
         func_map.put(stack_vars[stack_top1].name, new func(1, 0, stack_top1, 3, true));
         stack_vars[++stack_top1] = new StackVar(true, true, "putdouble", 3, new Var_position(4, 1), true);
+        global_vars[++global_top] = stack_vars[stack_top1];
         func_map.put(stack_vars[stack_top1].name, new func(1, 0, stack_top1, 3, true));
         stack_vars[++stack_top1] = new StackVar(true, true, "putchar", 3, new Var_position(5, 1), true);
+        global_vars[++global_top] = stack_vars[stack_top1];
         func_map.put(stack_vars[stack_top1].name, new func(1, 0, stack_top1, 3, true));
         stack_vars[++stack_top1] = new StackVar(true, true, "putstr", 3, new Var_position(6, 1), true);
+        global_vars[++global_top] = stack_vars[stack_top1];
         func_map.put(stack_vars[stack_top1].name, new func(1, 0, stack_top1, 3, true));
         stack_vars[++stack_top1] = new StackVar(true, true, "putln", 3, new Var_position(7, 1), true);
+        global_vars[++global_top] = stack_vars[stack_top1];
         func_map.put(stack_vars[stack_top1].name, new func(0, 0, stack_top1, 3, true));
         stack_vars[++stack_top1] = new StackVar(true, true, "_start", 1, new Var_position(8, 1), true);//初始化函数_start
+        global_vars[++global_top] = stack_vars[stack_top1];
     }
 
     /**
@@ -233,12 +244,12 @@ public final class Analyser {
      * @param curPos        当前 token 的位置（报错用）
      * @throws AnalyzeError 如果重复定义了则抛异常
      */
-    private void addSymbol(String name, boolean isInitialized, boolean isConstant, Pos curPos, int type, Var_position position,boolean is_fn) throws
+    private void addSymbol(String name, boolean isInitialized, boolean isConstant, Pos curPos, int type, Var_position position, boolean is_fn) throws
             AnalyzeError {
         if (stack_get_current(name) != null) {
             throw new AnalyzeError(ErrorCode.DuplicateDeclaration, curPos);
         } else {
-            this.stack_vars[++stack_top1] = new StackVar(isConstant, isInitialized, name, type, position,is_fn);
+            this.stack_vars[++stack_top1] = new StackVar(isConstant, isInitialized, name, type, position, is_fn);
         }
     }
 
@@ -313,9 +324,10 @@ public final class Analyser {
         if (func_map.get(fn_name.getValueString()) != null) {
             throw new AnalyzeError(ErrorCode.DuplicateDeclaration, fn_name.getStartPos());
         } else {
-            Var_position position = new Var_position(stack_top1 + 1, 1);
-            addSymbol(fn_name.getValueString(), true, true, fn_name.getStartPos(), 1, position,true);
+            Var_position position = new Var_position(global_top + 1, 1);
+            addSymbol(fn_name.getValueString(), true, true, fn_name.getStartPos(), 1, position, true);
             tmp_fn = stack_vars[stack_top1];
+            global_vars[++global_top] = tmp_fn;
         }
         args_tmp = 0;
         local_tmp = 0;
@@ -341,8 +353,8 @@ public final class Analyser {
 //        }
         analyseBlockStmt();
         tmp_func.set_locals_num(local_tmp);
-        if(tmp_func.return_num==3)
-            if(tmp_func.getOperations().size()==0||tmp_func.getOperations().get(tmp_func.getOperations().size()-1).opt!=Operation.ret)
+        if (tmp_func.return_num == 3)
+            if (tmp_func.getOperations().size() == 0 || tmp_func.getOperations().get(tmp_func.getOperations().size() - 1).opt != Operation.ret)
                 tmp_func.AddOperations(new Instruction(Operation.ret));
 //        System.out.println(tmp_func.getOperations());
         tmp_func = func_list[0];
@@ -370,10 +382,10 @@ public final class Analyser {
         if (check(TokenType.CONST_KW)) {
             expect(TokenType.CONST_KW);
             Token param = expect(TokenType.IDENT);
-            addSymbol(param.getValueString(), true, true, param.getStartPos(), 1, position,false);
+            addSymbol(param.getValueString(), true, true, param.getStartPos(), 1, position, false);
         } else {
             Token param = expect(TokenType.IDENT);
-            addSymbol(param.getValueString(), true, false, param.getStartPos(), 1, position,false);
+            addSymbol(param.getValueString(), true, false, param.getStartPos(), 1, position, false);
         }
         tmp_var = stack_vars[stack_top1];
         expect(TokenType.COLON);
@@ -411,21 +423,22 @@ public final class Analyser {
         }
         local_tmp++;
     }
+
     /**
      * 获取变量地址
-     * */
+     */
     //1 global,2 args,3 locals
-    private void get_var_addr(Var_position position){
-        if(position.var_type==1){
-            tmp_func.AddOperations(new Instruction(Operation.globa,position.position));
-        }else if(position.var_type==2){
-            if(tmp_func.return_num!=3)
-                tmp_func.AddOperations(new Instruction(Operation.arga,position.position));
-            else{
-                tmp_func.AddOperations(new Instruction(Operation.arga,position.position-1));
+    private void get_var_addr(Var_position position) {
+        if (position.var_type == 1) {
+            tmp_func.AddOperations(new Instruction(Operation.globa, position.position));
+        } else if (position.var_type == 2) {
+            if (tmp_func.return_num != 3)
+                tmp_func.AddOperations(new Instruction(Operation.arga, position.position));
+            else {
+                tmp_func.AddOperations(new Instruction(Operation.arga, position.position - 1));
             }
-        }else if(position.var_type==3){
-            tmp_func.AddOperations(new Instruction(Operation.loca,position.position));
+        } else if (position.var_type == 3) {
+            tmp_func.AddOperations(new Instruction(Operation.loca, position.position));
         }
     }
 
@@ -437,11 +450,13 @@ public final class Analyser {
         Token var = expect(TokenType.IDENT);
         Var_position position;
         if (stack_top2 == 0)//全局变量
-            position = new Var_position(stack_top1 + 1, 1);
+            position = new Var_position(global_top + 1, 1);
         else
             position = new Var_position(local_tmp, 3);
-        addSymbol(var.getValueString(), false, false, var.getStartPos(), 1, position,false);
+        addSymbol(var.getValueString(), false, false, var.getStartPos(), 1, position, false);
         tmp_var = stack_vars[stack_top1];
+        if (stack_top2 == 0)//全局变量
+            global_vars[++global_top] = tmp_var;
         if (stack_top2 == 0)
             tmp_var.setInitialized(true);
         expect(TokenType.COLON);
@@ -461,42 +476,42 @@ public final class Analyser {
         expect(TokenType.SEMICOLON);
         assign_flag = 1;
     }
+
     //把表达式中的操作加到当前函数中
     //1 global,2 args,3 locals
     //1 Unknown,2 int,3 void,4 double
     private void trans_expr(ArrayList<ExprToken> arrayList) {
-        for(int i=0;i<arrayList.size();i++){
-            ExprToken tmp=arrayList.get(i);
-            if(tmp.type==ExprType.Var){
-                Var ttmp=(Var)tmp;
+        for (int i = 0; i < arrayList.size(); i++) {
+            ExprToken tmp = arrayList.get(i);
+            if (tmp.type == ExprType.Var) {
+                Var ttmp = (Var) tmp;
                 get_var_addr(ttmp.stack_var.position);
                 tmp_func.AddOperations(new Instruction(Operation.load_64));
-            }
-            else if(tmp.type==ExprType.UINT_LITERAL){
-                tmp_func.AddOperations(new Instruction(Operation.push,((Uint)tmp).value));
-            }else if(tmp.type==ExprType.FUNC){
-                Call_func ttmp=(Call_func)tmp;
+            } else if (tmp.type == ExprType.UINT_LITERAL) {
+                tmp_func.AddOperations(new Instruction(Operation.push, ((Uint) tmp).value));
+            } else if (tmp.type == ExprType.FUNC) {
+                Call_func ttmp = (Call_func) tmp;
                 func tmp_fun = ttmp.function;
-                if(tmp_fun.return_num!=3)
-                    tmp_func.AddOperations(new Instruction(Operation.stackalloc,1));
+                if (tmp_fun.return_num != 3)
+                    tmp_func.AddOperations(new Instruction(Operation.stackalloc, 1));
                 else
-                    tmp_func.AddOperations(new Instruction(Operation.stackalloc,0));
-                boolean tmp_flag=expr_stmt_flag;
-                expr_stmt_flag=false;
-                for(int j=0;j<ttmp.args.size();j++){
+                    tmp_func.AddOperations(new Instruction(Operation.stackalloc, 0));
+                boolean tmp_flag = expr_stmt_flag;
+                expr_stmt_flag = false;
+                for (int j = 0; j < ttmp.args.size(); j++) {
                     trans_expr(ttmp.args.get(j));
                 }
-                expr_stmt_flag=tmp_flag;
-                if(tmp_fun.is_inner_func){
-                    tmp_func.AddOperations(new Instruction(Operation.callname,tmp_fun.global_num));
-                }else{
-                    tmp_func.AddOperations(new Instruction(Operation.call,tmp_fun.func_num));
+                expr_stmt_flag = tmp_flag;
+                if (tmp_fun.is_inner_func) {
+                    tmp_func.AddOperations(new Instruction(Operation.callname, tmp_fun.global_num));
+                } else {
+                    tmp_func.AddOperations(new Instruction(Operation.call, tmp_fun.func_num));
                 }
-                if(expr_stmt_flag){
-                    if(tmp_fun.return_num!=3)
-                        tmp_func.AddOperations(new Instruction(Operation.popn,1));
+                if (expr_stmt_flag) {
+                    if (tmp_fun.return_num != 3)
+                        tmp_func.AddOperations(new Instruction(Operation.popn, 1));
                 }
-            }else{
+            } else {
 //                System.out.println(tmp.type);
                 switch (tmp.type) {
                     case NEG:
@@ -555,11 +570,13 @@ public final class Analyser {
         Token var = expect(TokenType.IDENT);
         Var_position position;
         if (stack_top2 == 0)
-            position = new Var_position(stack_top1 + 1, 1);
+            position = new Var_position(global_top + 1, 1);
         else
             position = new Var_position(local_tmp, 3);
-        addSymbol(var.getValueString(), true, true, var.getStartPos(), 1, position,false);
+        addSymbol(var.getValueString(), true, true, var.getStartPos(), 1, position, false);
         tmp_var = stack_vars[stack_top1];
+        if (stack_top2 == 0)//全局变量
+            global_vars[++global_top] = tmp_var;
         expect(TokenType.COLON);
         int type = analyseFnTy();
         tmp_var.setType(type);
@@ -646,16 +663,17 @@ public final class Analyser {
      * call_expr -> IDENT '(' call_param_list? ')'
      * call_param_list -> expr (',' expr)*
      */
-    boolean is_assgin=false;//不能连等
+    boolean is_assgin = false;//不能连等
+
     private boolean analyseAssignOrIdentOrCallExpr() throws CompileError {
         if (check(TokenType.IDENT)) {
             Token var = expect(TokenType.IDENT);
             if (check(TokenType.ASSIGN)) {
-                if(is_assgin){
-                    throw new AnalyzeError(ErrorCode.MultipleAssign,peek().getStartPos());
+                if (is_assgin) {
+                    throw new AnalyzeError(ErrorCode.MultipleAssign, peek().getStartPos());
                 }
-                is_assgin=true;
-                expr_stmt_flag=false;
+                is_assgin = true;
+                expr_stmt_flag = false;
                 expr_token[expr_top].clear();
                 expect(TokenType.ASSIGN);
                 StackVar tmp_stack_var = stack_get_full(var.getValueString());
@@ -665,9 +683,9 @@ public final class Analyser {
                     assign_flag = tmp_stack_var.type;
 //                    System.out.println(String.format("%s:%d",var.getValueString(),assign_flag));
                     analyseExpr();
-                    expr_assgin=true;
+                    expr_assgin = true;
                     assign_flag = 1;
-                    is_assgin=false;
+                    is_assgin = false;
                     return true;
                 } else {
                     if (tmp_stack_var == null)
@@ -727,18 +745,18 @@ public final class Analyser {
 
     private void analyseCallParamList() throws CompileError {
         param_cnt++;
-        int tmp_cnt=param_cnt;
+        int tmp_cnt = param_cnt;
         analyseExpr();
-        param_cnt=tmp_cnt;
+        param_cnt = tmp_cnt;
         call_func[expr_top].add_arg(char_priority.expr_priority(expr_token[expr_top]));
         while (check(TokenType.COMMA)) {
             expr_token[expr_top].clear();
             param_cnt++;
-            tmp_cnt=param_cnt;
+            tmp_cnt = param_cnt;
             expect(TokenType.COMMA);
             analyseExpr();
             call_func[expr_top].add_arg(char_priority.expr_priority(expr_token[expr_top]));
-            param_cnt=tmp_cnt;
+            param_cnt = tmp_cnt;
         }
     }
 
@@ -748,13 +766,16 @@ public final class Analyser {
     private boolean analyseLiteralExpr() throws CompileError {
         if (check(TokenType.UINT_LITERAL)) {
             Token tmp = expect(TokenType.UINT_LITERAL);
-            if(assign_flag!=2&&expr_top==0){
-                throw new AnalyzeError(ErrorCode.InvalidAssignment,peek().getStartPos());
+            if (assign_flag != 2 && expr_top == 0) {
+                throw new AnalyzeError(ErrorCode.InvalidAssignment, peek().getStartPos());
             }
             expr_token[expr_top].add(new Uint(ExprType.UINT_LITERAL, (long) tmp.getValue()));
             return true;
         } else if (check(TokenType.STRING_LITERAL)) {
-            expect(TokenType.STRING_LITERAL);
+            Token tmp = expect(TokenType.STRING_LITERAL);
+//            System.out.print(tmp.getValueString());
+            global_vars[++global_top] = new StackVar(true, true, tmp.getValueString(), 1, (new Var_position(global_top, 1)), true);
+            expr_token[expr_top].add(new Uint(ExprType.UINT_LITERAL, (long) global_top));
             return true;
         }
         return false;
@@ -859,8 +880,9 @@ public final class Analyser {
      * | block_stmt
      * | empty_stmt
      */
-    boolean expr_assgin=false;//判断是不是赋值表达式
-    boolean expr_stmt_flag=false;
+    boolean expr_assgin = false;//判断是不是赋值表达式
+    boolean expr_stmt_flag = false;
+
     private void analyseStmt() throws CompileError {
         if (check(TokenType.LET_KW) || check(TokenType.CONST_KW)) {
             analyseDeclStmt();
@@ -879,14 +901,14 @@ public final class Analyser {
             expect(TokenType.SEMICOLON);
         } else {
             expr_token[expr_top].clear();
-            expr_stmt_flag=true;
+            expr_stmt_flag = true;
             analyseExpr();
             trans_expr(char_priority.expr_priority(expr_token[expr_top]));
 //            debug_print.print_expr(char_priority.expr_priority(expr_token[expr_top]), true);
-            expr_stmt_flag=false;
-            if(expr_assgin){
+            expr_stmt_flag = false;
+            if (expr_assgin) {
                 tmp_func.AddOperations(new Instruction(Operation.store_64));
-                expr_assgin=false;
+                expr_assgin = false;
             }
             expect(TokenType.SEMICOLON);
         }
@@ -898,20 +920,20 @@ public final class Analyser {
     private void analyseReturnStmt() throws CompileError {
         expect(TokenType.RETURN_KW);
         expr_token[expr_top].clear();
-        assign_flag=tmp_func.return_num;
+        assign_flag = tmp_func.return_num;
 //        System.out.println("//"+assign_flag);
-        tmp_func.AddOperations(new Instruction(Operation.arga,0));
-        if(!check(TokenType.SEMICOLON)) {
+        tmp_func.AddOperations(new Instruction(Operation.arga, 0));
+        if (!check(TokenType.SEMICOLON)) {
             analyseExpr();
             trans_expr(char_priority.expr_priority(expr_token[expr_top]));
             tmp_func.AddOperations(new Instruction(Operation.store_64));
-        }else{
-            if(tmp_func.return_num!=3){
-                throw new AnalyzeError(ErrorCode.InvalidValueType,peek().getStartPos());
+        } else {
+            if (tmp_func.return_num != 3) {
+                throw new AnalyzeError(ErrorCode.InvalidValueType, peek().getStartPos());
             }
         }
 //        debug_print.print_expr(char_priority.expr_priority(expr_token[expr_top]), true);
-        assign_flag=1;
+        assign_flag = 1;
         tmp_func.AddOperations(new Instruction(Operation.ret));
         expect(TokenType.SEMICOLON);
     }
@@ -923,25 +945,26 @@ public final class Analyser {
         expect(TokenType.WHILE_KW);
         expr_token[expr_top].clear();
         assign_flag = 2;
-        int loop_cnt=tmp_func.operations.size();
-        tmp_func.AddOperations(new Instruction(Operation.br,0));
+        int loop_cnt = tmp_func.operations.size();
+        tmp_func.AddOperations(new Instruction(Operation.br, 0));
         analyseExpr();
         trans_expr(char_priority.expr_priority(expr_token[expr_top]));
-        Instruction begin=new Instruction(Operation.br,0);
-        tmp_func.AddOperations(new Instruction(Operation.br_true,1));
+        Instruction begin = new Instruction(Operation.br, 0);
+        tmp_func.AddOperations(new Instruction(Operation.br_true, 1));
         tmp_func.AddOperations(begin);
-        int br_cnt=tmp_func.operations.size();
+        int br_cnt = tmp_func.operations.size();
         assign_flag = 1;
 //        debug_print.print_expr(char_priority.expr_priority(expr_token[expr_top]), true);
         analyseBlockStmt();
-        tmp_func.AddOperations(new Instruction(Operation.br,loop_cnt-tmp_func.operations.size()));
-        begin.setArg1(tmp_func.operations.size()-br_cnt);
+        tmp_func.AddOperations(new Instruction(Operation.br, loop_cnt - tmp_func.operations.size()));
+        begin.setArg1(tmp_func.operations.size() - br_cnt);
     }
 
     /**
      * if_stmt -> 'if' expr block_stmt ('else' 'if' expr block_stmt)* ('else' block_stmt)
      */
-    ArrayList<Instruction> br_list=new ArrayList<>();
+    ArrayList<Instruction> br_list = new ArrayList<>();
+
     private void analyseIfStmt() throws CompileError {
         expect(TokenType.IF_KW);
         expr_token[expr_top].clear();
@@ -950,15 +973,15 @@ public final class Analyser {
         trans_expr(char_priority.expr_priority(expr_token[expr_top]));
 //        debug_print.print_expr(char_priority.expr_priority(expr_token[expr_top]), true);
         assign_flag = 1;
-        Instruction begin=new Instruction(Operation.br,0);
-        tmp_func.AddOperations(new Instruction(Operation.br_true,1));
+        Instruction begin = new Instruction(Operation.br, 0);
+        tmp_func.AddOperations(new Instruction(Operation.br_true, 1));
         tmp_func.AddOperations(begin);
-        int br_cnt=tmp_func.operations.size();
+        int br_cnt = tmp_func.operations.size();
         analyseBlockStmt();
-        Instruction tmp_br=new Instruction(Operation.br,tmp_func.getOperations().size());
+        Instruction tmp_br = new Instruction(Operation.br, tmp_func.getOperations().size());
         br_list.add(tmp_br);
         tmp_func.AddOperations(tmp_br);
-        begin.setArg1(tmp_func.operations.size()-br_cnt);
+        begin.setArg1(tmp_func.operations.size() - br_cnt);
         while (check(TokenType.ELSE_KW)) {
             expect(TokenType.ELSE_KW);
             if (check(TokenType.IF_KW)) {
@@ -969,23 +992,23 @@ public final class Analyser {
                 assign_flag = 1;
                 trans_expr(char_priority.expr_priority(expr_token[expr_top]));
 //              debug_print.print_expr(char_priority.expr_priority(expr_token[expr_top]), true);
-                tmp_func.AddOperations(new Instruction(Operation.br_true,1));
-                begin=new Instruction(Operation.br,0);
+                tmp_func.AddOperations(new Instruction(Operation.br_true, 1));
+                begin = new Instruction(Operation.br, 0);
                 tmp_func.AddOperations(begin);
-                br_cnt=tmp_func.operations.size();
+                br_cnt = tmp_func.operations.size();
                 analyseBlockStmt();
-                tmp_br=new Instruction(Operation.br,tmp_func.getOperations().size());
+                tmp_br = new Instruction(Operation.br, tmp_func.getOperations().size());
                 br_list.add(tmp_br);
                 tmp_func.AddOperations(tmp_br);
-                begin.setArg1(tmp_func.operations.size()-br_cnt);
+                begin.setArg1(tmp_func.operations.size() - br_cnt);
             } else {
                 analyseBlockStmt();
                 break;
             }
         }
-        for(int i=0;i<br_list.size();i++){
-            Instruction tmp=br_list.get(i);
-            tmp.setArg1(tmp_func.getOperations().size()-tmp.arg1-1);
+        for (int i = 0; i < br_list.size(); i++) {
+            Instruction tmp = br_list.get(i);
+            tmp.setArg1(tmp_func.getOperations().size() - tmp.arg1 - 1);
         }
         br_list.clear();
     }

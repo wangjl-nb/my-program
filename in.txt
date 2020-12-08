@@ -1,20 +1,20 @@
+let a:int = 0;
+let b:int = 1;
+fn swap() -> void{
+    let temp: int = a;
+    a = b;
+    b = temp;
+}
+
 fn main() -> void {
-    let needle: int;
-    let low: int = 0;
-    let high: int = 1024;
-    let mid: int;
-    needle = getint();
-    while low != high {
-        mid = (low+high+1)/2;
-        putint(mid);
-        putln();
-        if mid > needle {
-            high = mid;
-        } else if mid == needle {
-            low = mid;
-            high = mid;
-        } else {
-            low = mid;
-        }
-    }
+    a = getint();
+    b = getint();
+    putint(a);
+    putchar(32);
+    putint(b);
+    putln();
+    swap();
+    putint(a);
+    putchar(32);
+    putint(b);
 }
