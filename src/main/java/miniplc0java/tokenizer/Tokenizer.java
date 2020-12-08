@@ -38,10 +38,59 @@ public class Tokenizer {
             return lexUInt();
         } else if (Character.isAlphabetic(peek)||peek=='_') {
             return lexIdentOrKeyword();
-        }else if(peek=='"'){
+        }else if(peek=='"') {
             return lexString();
+        }
+        else if(peek=='\''){
+            return lexChar();
         } else {
             return lexOperatorOrUnknown();
+        }
+    }
+
+    private Token lexChar() throws TokenizeError{
+        Pos now=it.currentPos();
+        StringBuffer str=new StringBuffer();
+        str.append(it.nextChar());
+        Boolean isPreTurn=false;
+        while(!it.isEOF()){
+            if(it.peekChar()=='\''&&!isPreTurn)
+                break;
+            if(it.peekChar()=='\\')
+                if(isPreTurn)
+                    isPreTurn=false;
+                else
+                    isPreTurn=true;
+            else{
+                isPreTurn=false;
+            }
+            str.append(it.nextChar());
+        }
+        if(it.peekChar()=='\''){
+            str.append(it.nextChar());
+        }
+        String pattern="\'([^'\\\\]|(\\\\[\\\\\"'ntr]))\'";
+//        System.out.println(str+"\n"+pattern);
+        boolean isMatch= Pattern.matches(pattern,str);
+        if(isMatch){
+            int num;
+            String string=str.substring(1,str.length()-1);
+            if(string.length()==1)
+                num=(int)string.charAt(0);
+            else{
+                if(string.charAt(1)=='n'){
+                    num=(int)'\n';
+                }else if(string.charAt(1)=='r'){
+                    num=(int)'\r';
+                }else if(string.charAt(1)=='t'){
+                    num=(int)'\t';
+                }else{
+                    num=(int)string.charAt(1);
+                }
+            }
+            return new Token(TokenType.UINT_LITERAL,(long)num,now,it.currentPos());
+        }else{
+            throw new TokenizeError(ErrorCode.InvalidChar,now);
         }
     }
 
