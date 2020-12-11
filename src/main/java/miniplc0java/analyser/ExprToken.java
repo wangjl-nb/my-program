@@ -1,5 +1,8 @@
 package miniplc0java.analyser;
 
+import miniplc0java.instruction.Instruction;
+import org.checkerframework.checker.units.qual.A;
+
 import java.util.ArrayList;
 
 public class ExprToken {
@@ -34,5 +37,13 @@ class Call_func extends ExprToken{
     }
     public void add_arg(ArrayList<ExprToken> args){
         this.args.add(args);
+    }
+}
+
+class While_br {
+    ArrayList<Instruction> br_list=new ArrayList<Instruction>();
+    int size;
+    While_br(int size){
+        this.size=size;
     }
 }

@@ -888,10 +888,15 @@ public final class Analyser {
         }
         else if(check(TokenType.BREAK_KW)){
             expect(TokenType.BREAK_KW);
+            Instruction opt=new Instruction(Operation.br,tmp_func.getOperations().size());
+            tmp_func.AddOperations(opt);
+            while_list[while_top].br_list.add(opt);
             expect(TokenType.SEMICOLON);
         }
         else if(check(TokenType.CONTINUE_KW)){
             expect(TokenType.CONTINUE_KW);
+            Instruction opt=new Instruction(Operation.br,while_list[while_top].size-tmp_func.getOperations().size());
+            tmp_func.AddOperations(opt);
             expect(TokenType.SEMICOLON);
         }
         else if (check(TokenType.RETURN_KW)) {
@@ -942,11 +947,14 @@ public final class Analyser {
     /**
      * while_stmt -> 'while' expr block_stmt
      */
+    While_br[] while_list=new While_br[1000];
+    int while_top=-1;
     private void analyseWhileStmt() throws CompileError {
         expect(TokenType.WHILE_KW);
         expr_token[expr_top].clear();
         assign_flag = 2;
         int loop_cnt = tmp_func.operations.size();
+        while_list[++while_top]=new While_br(tmp_func.getOperations().size());
         tmp_func.AddOperations(new Instruction(Operation.br, 0));
         analyseExpr();
         trans_expr(char_priority.expr_priority(expr_token[expr_top]));
@@ -959,6 +967,10 @@ public final class Analyser {
         analyseBlockStmt();
         tmp_func.AddOperations(new Instruction(Operation.br, loop_cnt - tmp_func.operations.size()));
         begin.setArg1(tmp_func.operations.size() - br_cnt);
+        for(Instruction opt:while_list[while_top].br_list){
+            opt.setArg1(tmp_func.getOperations().size()-opt.arg1-1);
+        }
+        while_top--;
     }
 
     /**
