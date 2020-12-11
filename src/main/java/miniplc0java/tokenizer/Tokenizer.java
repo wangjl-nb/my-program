@@ -164,6 +164,12 @@ public class Tokenizer {
             if(res.contentEquals("fn")){
                 return new Token(TokenType.FN_KW,"fn",now,it.currentPos());
             }
+            if(res.contentEquals("break")){
+                return new Token(TokenType.BREAK_KW,"break",now,it.currentPos());
+            }
+            if(res.contentEquals("continue")){
+                return new Token(TokenType.CONTINUE_KW,"continue",now,it.currentPos());
+            }
             if(res.contentEquals("let")){
                 return new Token(TokenType.LET_KW,"let",now,it.currentPos());
             }

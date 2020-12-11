@@ -318,7 +318,7 @@ public final class Analyser {
      * fn fib(x: int) -> int{}
      */
     private void analyseFn() throws CompileError {
-        is_fun_first = true;
+        is_fun_first = true;//跳过函数的第一个左大括号
         expect(TokenType.FN_KW);
         Token fn_name = expect(TokenType.IDENT);
         if (func_map.get(fn_name.getValueString()) != null) {
@@ -886,8 +886,14 @@ public final class Analyser {
         } else if (check(TokenType.WHILE_KW)) {
             analyseWhileStmt();
         }
-//      else if(check(TokenType.BREAK_KW))
-//      else if(check(TokenType.CONTINUE_KW))
+        else if(check(TokenType.BREAK_KW)){
+            expect(TokenType.BREAK_KW);
+            expect(TokenType.SEMICOLON);
+        }
+        else if(check(TokenType.CONTINUE_KW)){
+            expect(TokenType.CONTINUE_KW);
+            expect(TokenType.SEMICOLON);
+        }
         else if (check(TokenType.RETURN_KW)) {
             analyseReturnStmt();
         } else if (check(TokenType.L_BRACE)) {

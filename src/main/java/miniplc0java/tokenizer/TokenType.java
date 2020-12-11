@@ -69,6 +69,10 @@ public enum TokenType {
     COLON,
     /** 注释 */
     ANNOTATION,
+    /** break */
+    BREAK_KW,
+    /** continue */
+    CONTINUE_KW,
     /** 文件尾 */
     EOF;
 
@@ -145,6 +149,10 @@ public enum TokenType {
                 return "Operation:COMMA";
             case ANNOTATION:
                 return "Annotation";
+            case BREAK_KW:
+                return "Break";
+            case CONTINUE_KW:
+                return "Continue";
             default:
                 return "InvalidToken";
         }
