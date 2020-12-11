@@ -1,4 +1,7 @@
 fn move(level: int, a: int, c:int) -> void {
+    if(a>c){
+        break;
+    }
     putint(level);
     putchar(32);
     putchar(a);

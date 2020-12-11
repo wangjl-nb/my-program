@@ -150,9 +150,9 @@ public enum TokenType {
             case ANNOTATION:
                 return "Annotation";
             case BREAK_KW:
-                return "Break";
+                return "KeyWord:Break";
             case CONTINUE_KW:
-                return "Continue";
+                return "KeyWord:Continue";
             default:
                 return "InvalidToken";
         }
