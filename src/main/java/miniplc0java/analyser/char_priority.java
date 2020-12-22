@@ -104,5 +104,6 @@ class analysers {
         map.put(ExprType.GE,0);
         map.put(ExprType.GT,0);
         map.put(ExprType.IOTF,3);
+        map.put(ExprType.FTOI,3);
     }
 }

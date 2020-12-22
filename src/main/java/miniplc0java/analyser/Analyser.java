@@ -594,6 +594,9 @@ public final class Analyser {
                     case IOTF:
                         tmp_func.AddOperations(new Instruction(Operation.itof));
                         break;
+                    case FTOI:
+                        tmp_func.AddOperations(new Instruction(Operation.ftoi));
+                        break;
                     default:
                         tmp_func.AddOperations(new Instruction(Operation.panic));
                 }
@@ -670,10 +673,17 @@ public final class Analyser {
         if (!flag) {
             throw new AnalyzeError(ErrorCode.IncompleteExpression, peek().getStartPos());
         }
-        if (check(TokenType.AS_KW)) {
+        while (check(TokenType.AS_KW)) {
             expect(TokenType.AS_KW);
-            expect(TokenType.DOUBLE);
-            expr_token[expr_top].add(new ExprToken(ExprType.IOTF));
+            if(check(TokenType.DOUBLE)) {
+                expect(TokenType.DOUBLE);
+                expr_token[expr_top].add(new ExprToken(ExprType.IOTF));
+                assign_flag=4;
+            }else{
+                expect(TokenType.INTEGER);
+                expr_token[expr_top].add(new ExprToken(ExprType.FTOI));
+                assign_flag=2;
+            }
         }
         if (analyseBinaryOperator()) {
             analyseExpr();
@@ -737,11 +747,7 @@ public final class Analyser {
                 expect(TokenType.L_PAREN);
                 param_cnt = 0;
                 func function = func_map.get(var.getValueString());
-                if (assign_flag > 1) {
-                    if (function.return_num != assign_flag&&!is_param) {
-                        throw new AnalyzeError(ErrorCode.InvalidAssignment, peek().getStartPos());
-                    }
-                }else{
+                if (assign_flag == 1) {
                     assign_flag=function.return_num;
                 }
                 Call_func func = new Call_func(ExprType.FUNC, function);
@@ -761,6 +767,9 @@ public final class Analyser {
                     throw new AnalyzeError(ErrorCode.InvalidParamNum, var.getStartPos());
                 }
                 expect(TokenType.R_PAREN);
+                if (function.return_num != assign_flag&&!is_param&&!check(TokenType.AS_KW)) {
+                    throw new AnalyzeError(ErrorCode.InvalidAssignment, peek().getStartPos());
+                }
                 expr_top--;
                 return true;
             } else {
@@ -773,7 +782,6 @@ public final class Analyser {
                 }
                 if (assign_flag > 1) {
                     if (tmp_stack_var.type != assign_flag&&!check(TokenType.AS_KW)&&!is_param) {
-                        System.out.println(assign_flag);
                         throw new AnalyzeError(ErrorCode.InvalidAssignment, peek().getStartPos());
                     }
                 }else{

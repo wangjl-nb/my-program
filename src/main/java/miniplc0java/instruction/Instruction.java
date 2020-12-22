@@ -203,6 +203,8 @@ public class Instruction {
                 return "DivF";
             case cmp_f:
                 return "CmpF";
+            case ftoi:
+                return "FToI";
             default:
                 return "Panic";
         }

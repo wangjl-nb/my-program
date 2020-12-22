@@ -34,7 +34,9 @@ public enum ExprType{
     /** 无符号整数*/
     UINT_LITERAL,
     /** Iotf*/
-    IOTF;
+    IOTF,
+    /** FToI*/
+    FTOI;
     @Override
     public String toString() {
         switch (this) {
@@ -70,7 +72,9 @@ public enum ExprType{
             case FUNC:
                 return "Func";
             case IOTF:
-                return "Iotf";
+                return "IToF";
+            case FTOI:
+                return "FToI";
             default:
                 return "InvalidToken";
         }
