@@ -92,16 +92,17 @@ class analysers {
     analysers(){
         map=new HashMap<ExprType, Integer>();
         map.put(ExprType.PLUS,1);
-        map.put(ExprType.NEG,3);
+        map.put(ExprType.NEG,4);
         map.put(ExprType.MINUS,1);
         map.put(ExprType.MUL,2);
         map.put(ExprType.DIV,2);
-        map.put(ExprType.L_PAREN,4);
+        map.put(ExprType.L_PAREN,5);
         map.put(ExprType.LT,0);
         map.put(ExprType.LE,0);
         map.put(ExprType.NEQ,0);
         map.put(ExprType.EQ,0);
         map.put(ExprType.GE,0);
         map.put(ExprType.GT,0);
+        map.put(ExprType.IOTF,3);
     }
 }

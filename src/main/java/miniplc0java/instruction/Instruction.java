@@ -189,6 +189,20 @@ public class Instruction {
                 return "Ret";
             case callname:
                 return String.format("CallName(%s)",this.arg1);
+            case itof:
+                return "IToF";
+            case neg_f:
+                return "NegF";
+            case add_f:
+                return "AddF";
+            case sub_f:
+                return "SubF";
+            case mul_f:
+                return "MulF";
+            case div_f:
+                return "DivF";
+            case cmp_f:
+                return "CmpF";
             default:
                 return "Panic";
         }

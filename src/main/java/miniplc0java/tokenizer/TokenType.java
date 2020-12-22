@@ -11,6 +11,8 @@ public enum TokenType {
     UINT_LITERAL,
     /** 字符串 */
     STRING_LITERAL,
+    /** 浮点数*/
+    DOUBLE_LITERAL,
     /** 标识符 */
     IDENT,
     /** 函数 */
@@ -73,6 +75,8 @@ public enum TokenType {
     BREAK_KW,
     /** continue */
     CONTINUE_KW,
+    /** double*/
+    DOUBLE,
     /** 文件尾 */
     EOF;
 
@@ -153,6 +157,10 @@ public enum TokenType {
                 return "KeyWord:Break";
             case CONTINUE_KW:
                 return "KeyWord:Continue";
+            case DOUBLE:
+                return "KeyWord:Double";
+            case DOUBLE_LITERAL:
+                return "ValueType:Double";
             default:
                 return "InvalidToken";
         }

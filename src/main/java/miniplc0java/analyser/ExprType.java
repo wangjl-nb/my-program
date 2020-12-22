@@ -32,7 +32,9 @@ public enum ExprType{
     /** 函数*/
     FUNC,
     /** 无符号整数*/
-    UINT_LITERAL;
+    UINT_LITERAL,
+    /** Iotf*/
+    IOTF;
     @Override
     public String toString() {
         switch (this) {
@@ -67,6 +69,8 @@ public enum ExprType{
                 return "Var";
             case FUNC:
                 return "Func";
+            case IOTF:
+                return "Iotf";
             default:
                 return "InvalidToken";
         }

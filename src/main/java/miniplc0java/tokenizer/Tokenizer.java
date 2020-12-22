@@ -35,7 +35,7 @@ public class Tokenizer {
 
         char peek = it.peekChar();
         if (Character.isDigit(peek)) {
-            return lexUInt();
+            return lexUIntOrDouble();
         } else if (Character.isAlphabetic(peek)||peek=='_') {
             return lexIdentOrKeyword();
         }else if(peek=='"') {
@@ -127,7 +127,7 @@ public class Tokenizer {
         }
     }
 
-    private Token lexUInt() throws TokenizeError {
+    private Token lexUIntOrDouble() throws TokenizeError {
         // 请填空：
         // 直到查看下一个字符不是数字为止:
         // -- 前进一个字符，并存储这个字符
@@ -138,11 +138,39 @@ public class Tokenizer {
         // Token 的 Value 应填写数字的值
 //        throw new Error("Not implemented");
         long sum = 0;
+        boolean isdouble=false;
+        StringBuilder token = new StringBuilder();
         Pos now = it.currentPos();
+        char ch;
         while (Character.isDigit(it.peekChar())) {
-            sum = sum * 10 + it.nextChar() - '0';
+            ch=it.nextChar();
+            token.append(ch);
+            sum = sum * 10 + ch - '0';
         }
-        return new Token(TokenType.UINT_LITERAL,sum,now,it.currentPos());
+        if(it.peekChar()=='.'){
+            isdouble=true;
+            token.append(it.nextChar());
+            if(!Character.isDigit(it.peekChar()))
+                throw new TokenizeError(ErrorCode.InvalidInput,it.currentPos());
+            while(Character.isDigit(it.peekChar())){
+                token.append(it.nextChar());
+            }
+            ch = it.peekChar();
+            if(ch == 'e' || ch == 'E'){
+                token.append(it.nextChar());
+                ch = it.peekChar();
+                if(ch == '+' || ch == '-')
+                    token.append(it.nextChar());
+                if(!Character.isDigit(it.peekChar()))
+                    throw new TokenizeError(ErrorCode.InvalidInput,it.currentPos());
+                while(Character.isDigit(it.peekChar())){
+                    token.append(it.nextChar());
+                }
+            }
+            return new Token(TokenType.DOUBLE_LITERAL,Double.parseDouble(token.toString()),now,it.currentPos());
+        }
+        else
+            return new Token(TokenType.UINT_LITERAL,sum,now,it.currentPos());
     }
 
     private Token lexIdentOrKeyword() throws TokenizeError {
@@ -196,6 +224,9 @@ public class Tokenizer {
             }
             if(res.contentEquals("void")){
                 return new Token(TokenType.VOID,"void",now,it.currentPos());
+            }
+            if(res.contentEquals("double")){
+                return new Token(TokenType.DOUBLE,"double",now,it.currentPos());
             }
             return new Token(TokenType.IDENT,res,now,it.currentPos());
         }catch (Exception e){
