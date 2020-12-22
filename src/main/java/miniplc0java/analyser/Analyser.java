@@ -1070,8 +1070,8 @@ public final class Analyser {
                 expr_token[expr_top].clear();
                 assign_flag = 1;
                 analyseExpr();
-                assign_flag = 1;
                 trans_expr(char_priority.expr_priority(expr_token[expr_top]));
+                assign_flag = 1;
 //              debug_print.print_expr(char_priority.expr_priority(expr_token[expr_top]), true);
                 tmp_func.AddOperations(new Instruction(Operation.br_true, 1));
                 begin = new Instruction(Operation.br, 0);
